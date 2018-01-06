@@ -1,0 +1,24 @@
+{
+  "name": "fcc-leah-carr-book-trade-app",
+  "version": "1.0.0",
+  "description": "fcc Manage a book trade challenge https://www.freecodecamp.org/challenges/manage-a-book-trading-club",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/attributeofextension/book-trade-app.git"
+  },
+  "keywords": [
+    "fcc",
+    "book-trade"
+  ],
+  "author": "Leah Carr",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/attributeofextension/book-trade-app/issues"
+  },
+  "homepage": "https://github.com/attributeofextension/book-trade-app#readme"
+}
