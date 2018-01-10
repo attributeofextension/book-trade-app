@@ -1,0 +1,33 @@
+body {
+  font-family: 'Amaranth', sans-serif;
+}
+.navContainer {
+  font-family: 'Amaranth', sans-serif;
+}
+.navContainer i {
+  font-size : 20px;
+  padding-top: 2px;
+  padding-bottom: -2px;
+}
+.headerBG {
+  background-color: #5cb85c;
+}
+.headerWell {
+  color : white;
+  text-align : center;
+  font-family: 'Amaranth', sans-serif;
+  padding : 30px 0px 30px 0px;
+}
+.headerWell h1 {
+  font-size: 60px;
+}
+.signup {
+  font-family: 'Amaranth', sans-serif;
+}
+.myBooks {
+  font-family: 'Amaranth', sans-serif;
+}
+.noPadding {
+  padding : 0px !important;
+  margin : 0px !important;
+}

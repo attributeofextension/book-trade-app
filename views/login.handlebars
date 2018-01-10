@@ -1,0 +1,23 @@
+<div class="container signup">
+  <h1>Login</h1>
+  
+  <form method="post" action="/login" enctype="application/x-www-form-urlencoded">
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" name="email" id="email" required>
+    {{#if usermsg}}
+    <small class="form-text text-danger">{{usermsg}}</small>
+    {{/if}}
+  </div>
+  <div class="form-group">
+    <label for"password">Password</label>
+    <input type="password" class="form-control" name="password" id="password" required>
+    {{#if passmsg}}
+    <small class="form-text text-danger">{{passmsg}}</small>
+    {{/if}}  
+  </div>
+  <button type="submit" class="btn btn-primary" name="submit" id="loginBtn">Login</button>
+  <button type="button" class="btn btn-success" id="signupBtn">Signup</button>
+  </form>
+</div>
+<script src="/js/login.js"></script>

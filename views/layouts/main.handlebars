@@ -1,0 +1,73 @@
+<html>
+<head>
+    <!-- FONTS -->
+    <link href="https://fonts.googleapis.com/css?family=Amaranth" rel="stylesheet">
+    <!-- My own CSS AND JS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- JQUERY -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <!-- FONTAWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<header>
+<title>BookTrader</title>
+</header>
+<body>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+  <div class="container navContainer"> 
+   
+    <ul class="nav justify-content-start">
+      <li class="nav-item">
+        <a class="navbar-brand" href="#">BookTrader</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Home</a>
+      </li>   
+    </ul>
+    <ul class="nav justify-content-end">
+    {{#if user}}
+      <li class="nav-item">
+        <a class="nav-link" href="#">All Books</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/mybooks">My Books</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/settings"><i class="fa fa-gear" aria-hidden="true"></i></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/logout">Logout</a>
+      </li>
+    {{else}}    
+      <li class="nav-item">
+        <a class="nav-link" href="/signup">Sign Up</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/login">Login</a>
+      </li>         
+    {{/if}}
+    </ul>
+  </div>
+</nav>
+<div class="container-fluid headerBG">
+  <div class="container headerWell">
+    <h1>Book Trader</h1>
+    <h1>
+      <i class="fa fa-book" aria-hidden="true"></i>
+      <i class="fa fa-exchange" aria-hidden="true"></i>
+      <i class="fa fa-book" aria-hidden="true"></i>
+    </h1>
+    <h5>Trade Books Online</h5>
+  </div>
+</div>
+
+
+{{{body}}}
+
+</body>
+</html>
