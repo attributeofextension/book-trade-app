@@ -18,7 +18,7 @@
 <title>BookTrader</title>
 </header>
 <body>
-<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+<nav class="navbar navbar-toggleable-md navbar-light bg-lightgrey">
   <div class="container navContainer"> 
    
     <ul class="nav justify-content-start">
@@ -32,7 +32,7 @@
     <ul class="nav justify-content-end">
     {{#if user}}
       <li class="nav-item">
-        <a class="nav-link" href="#">All Books</a>
+        <a class="nav-link" href="/allbooks">All Books</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/mybooks">My Books</a>
@@ -54,6 +54,8 @@
     </ul>
   </div>
 </nav>
+
+{{#if front}}
 <div class="container-fluid headerBG">
   <div class="container headerWell">
     <h1>Book Trader</h1>
@@ -65,7 +67,108 @@
     <h5>Trade Books Online</h5>
   </div>
 </div>
-
+{{else}}
+  {{#if user}}
+    <div class="container tradeRequests">
+        <button type="button" class="btn btn-primary" id="myReqBtn">Your trade requests ({{myrequests.length}} outstanding)</button>
+        <button type="button" class="btn btn-success" id="yourReqBtn">Trade requests for you ({{yourrequests.length}} unapproved)</button>
+    </div>
+    <div class="container myTrade hidden" id="myTrade">
+      {{#if myrequests}}
+      <div class="row">
+      <h2>Your outstanding requests:</h>
+      </div>
+      {{/if}}
+      <div class="row"> 
+      {{#each myrequests}}   
+      <div class="col-md-4">
+        <form method="post" action="/trade/remove" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="bookid" value="{{_id}}">
+        <div class="card">
+          <div class="card-body">
+            {{title}}
+            <div class="btn-group pull-right" role="group" aria-label="Basic example">
+              <button type="submit" class="btn btn-danger btn-sm"><i class='fa fa-times'></i></button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+      {{/each}}
+      </div>
+      {{#if myaccepted}}
+      <div class="row">
+        <h2>Your trade request was approved:</h2>
+      </div>
+      {{/if}}
+      <div class="row">
+      {{#each myaccepted}}   
+      <div class="col-md-4">
+        <form method="post" action="/trade/remove" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="bookid" value="{{_id}}">
+        <div class="card">
+          <div class="card-body">
+            {{title}}
+            <div class="btn-group pull-right" role="group" aria-label="Basic example">
+              <button type="submit" class="btn btn-danger btn-sm"><i class='fa fa-times'></i></button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+      {{/each}}
+      </div>
+    </div>
+    <div class="container yourTrade hidden" id="yourTrade">
+      {{#if yourrequests}}
+      <div class="row">
+        <h2>Requests from other users:</h2>
+      </div>
+      {{/if}}
+      <div class="row">
+      {{#each yourrequests}}
+      <div class="col-md-4">
+        <form method="post" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="bookid" value="{{_id}}">
+        <div class="card">
+          <div class="card-body">
+            {{title}}
+            <div class="btn-group pull-right" role="group" aria-label="Basic example">
+              <button type="submit" class="btn btn-danger btn-sm" formaction="/trade/remove"><i class='fa fa-times'></i></button>
+              <button type="submit" class="btn btn-success btn-sm" formaction="/trade/approve"><i class='fa fa-check'></i></button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+      {{/each}}
+    </div>
+    {{#if youraccepted}}
+    <div class="row">
+      <h2>Requests you've approved:</h2>
+    </div>
+    {{/if}}
+    <div class="row">
+      {{#each youraccepted}}
+      <div class="col-md-4">
+        <form method="post" action="/trade/remove" enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="bookid" value="{{_id}}">
+        <div class="card">
+          <div class="card-body">
+            {{title}}
+            <div class="btn-group pull-right" role="group" aria-label="Basic example">
+              <button type="submit" class="btn btn-danger btn-sm"><i class='fa fa-times'></i></button>
+            </div>
+          </div>
+        </div>
+        </form>
+      </div>
+      {{/each}}
+    </div>
+    </div>
+  {{/if}}
+  <script src="/js/main.js"></script>
+{{/if}}
 
 {{{body}}}
 

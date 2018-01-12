@@ -31,3 +31,26 @@ body {
   padding : 0px !important;
   margin : 0px !important;
 }
+.overlay {
+  position:absolute;
+  right : 5;
+  color : red !important;
+}
+.bg-lightgrey {
+  background-color: rgb(208, 221, 213);
+}
+.tradeRequests {
+  margin-top : 30px;
+  margin-bottom : 30px;
+  margin-left : 0px;
+}
+.hidden {
+  display:none;
+  visibility : hidden;
+}
+.myTrade {
+  font-size : 14px;
+}
+.yourTrade {
+  font-size : 14px;
+}

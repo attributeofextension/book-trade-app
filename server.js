@@ -25,11 +25,12 @@ var User = mongoose.model("User",userSchema);
 
 var bookSchema = new mongoose.Schema({
   title: String,
-  author: String,
   imgurl: String,
-  userid: String
+  userid: String,
+  requesterid: String,
+  tradeapproved: Boolean
 },{collection:'books'});
-var Books = mongoose.model("Books",bookSchema);
+var Book = mongoose.model("Book",bookSchema);
 
 //Configure Handlebars
 const exphbs = require("express-handlebars")
@@ -57,6 +58,13 @@ const saltRounds = 10;
 const expressSession = require('express-session');
 app.use(expressSession({secret:'carrot'}));
 
+//Configure Request
+const request = require('request');
+//var googleBooksURL = ""; //AIzaSyBF06H26PGnVzbs589ujAX_FnEL7V4ELbs API KEY
+// https://www.googleapis.com/books/v1/volumes?q=search+terms q= <bookname>
+function makeRequestURL(title) {
+  return "https://www.googleapis.com/books/v1/volumes?q=" + encodeURI(title) + "&key=AIzaSyBF06H26PGnVzbs589ujAX_FnEL7V4ELbs";
+}
 //Passport Configuration
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
@@ -122,7 +130,6 @@ passport.use('login', new LocalStrategy(
    usernameField:"email",
    passwordField:"password"},
    function(req,username,password,done) {
-    console.log("here");
     User.findOne({'email':username},function(err,user) {
       if(err) {
         console.log("Error looking up User: " + err);
@@ -130,7 +137,7 @@ passport.use('login', new LocalStrategy(
       }
       if(!user) {
         console.log("Email not found!");
-        done(null,false,req.flash("user","Email not found!"));
+        return done(null,false,req.flash("user","Email not found!"));
       }
      bcrypt.compare(password,user.password,function(err, res){
         if(!res) {
@@ -146,10 +153,10 @@ passport.use('login', new LocalStrategy(
 
 //ROUTES======================================================================
 app.get("/", function(req,res) {
-  res.render('home',{user:req.user});
+  res.render('home',{front: true,user:req.user});
 });
 app.get("/signup",function(req,res) {
-  res.render('signup',{user:req.user,usermsg: req.flash("user") });
+  res.render('signup',{front:true,user:req.user,usermsg: req.flash("user") });
 });
 app.post('/signup', passport.authenticate('signup', {
   successRedirect: '/',
@@ -157,7 +164,7 @@ app.post('/signup', passport.authenticate('signup', {
   failureFlash : true
 }));
 app.get('/login',function(req,res){
-  res.render('login',{user:req.user,usermsg:req.flash("user"),passmsg:req.flash("password")});
+  res.render('login',{front:true,user:req.user,usermsg:req.flash("user"),passmsg:req.flash("password")});
 });
 app.post("/login",passport.authenticate('login', {
   successRedirect: '/',
@@ -172,9 +179,9 @@ app.get('/logout', function(req,res) {
 });
 app.get('/settings', function(req,res) {
   if(req.user) {
-    res.render('settings',{user:req.user});
+    res.render('settings',{front:true,user:req.user});
   } else {
-    redirect('/logout');
+    redirect('/');
   }
 });
 app.post('/updateprofile' ,function(req,res) {
@@ -192,7 +199,7 @@ app.post('/updateprofile' ,function(req,res) {
       res.redirect('/');
     });
   } else {
-    res.redirect('/logout');
+    res.redirect('/');
   }
 });
 app.post('/changepassword', function(req,res) {
@@ -219,23 +226,168 @@ app.post('/changepassword', function(req,res) {
       }
     });
   } else {
-    res.redirect('/logout');
+    res.redirect('/');
   }
 });
 app.get('/mybooks',function (req,res) {
   if(req.user) {
-    res.render('mybooks', {user:req.user});
+    Book.find({userid:req.user._id}, function(err,books) {
+      if(err) {
+          console.log("Error looking up Books: " + err);
+          res.redirect('/');
+      }     
+      Book.find({requesterid:req.user._id}, function(err,myRequests) {
+        if(err) {
+          console.log("Error looking up Requests: " + err);
+          res.redirect('/');
+        }
+        var yourRequests = [];
+        var myAccepted = [];
+        var yourAccepted = [];
+        for( var j = 0; j < myRequests.length; j++) {
+          if(myRequests[j].tradeapproved) {
+            console.log(j);
+            myAccepted.push(myRequests[j]);
+            myRequests.splice(j,1);
+            j--;
+          }
+        }
+        for( var i = 0; i < books.length; i++ ) {
+          if(books[i].requesterid) {
+            if(books[i].tradeapproved) {
+              yourAccepted.push(books[i]);
+            } else {
+              yourRequests.push(books[i]);
+            }
+          }
+        }
+        res.render('mybooks', {front:false,user:req.user,books:books,myrequests:myRequests,yourrequests:yourRequests,myaccepted:myAccepted,youraccepted:yourAccepted});
+        });
+      });
   } else {
-    res.redirect('/logout');
+    res.redirect('/');
   }
 });
 app.post('/mybooks', function (req,res) {
   if(req.user) {
-    
-    res.redirect('/mybooks');
+    request(makeRequestURL(req.body.book), function (error, response, body) {
+      var parsed = JSON.parse(body);
+      var newBook = new Book();
+      
+      newBook.title = parsed.items[0].volumeInfo.title;
+      newBook.imgurl = parsed.items[0].volumeInfo.imageLinks.thumbnail;
+      newBook.userid = req.user._id;
+      newBook.requesterid = null;
+      newBook.tradeapproved = false;
+
+      newBook.save( function(err){
+        if(err) {
+          console.log("Error saving newBook to Database: " + err);
+        }
+        res.redirect('/mybooks');
+      });
+    });
   } else {
-    res.redirect('/logout');
+    res.redirect('/');
   }
+});
+app.post('/mybooks/remove', function(req,res) {
+  if(req.user) {
+    Book.remove({_id:req.body.bookid}, function(err){
+      if(err) {
+        console.log("Error removing book from Database: " + err);
+        res.redirect('/mybooks');
+      }
+      res.redirect('/mybooks');
+    });
+  } else {
+    res.redirect('/');
+  }
+});
+app.get('/allbooks', function(req,res) {
+  if(req.user) {
+    Book.find({}, function(err,books) {
+      if(err) {
+        console.log("Error looking up Books: " + err);
+        res.redirect('/');
+      }
+      var myRequests = [];
+      var yourRequests = [];
+      var myAccepted = [];
+      var yourAccepted = [];
+
+      for(var i = 0; i < books.length; i++) {
+        if(books[i].requesterid) {
+          if(books[i].tradeapproved ) {
+            yourAccepted.push(books[i]);
+          } else {
+            yourRequests.push(books[i]);
+          }
+          if(books[i].requesterid == req.user._id) {
+            if(books[i].tradeapproved) {
+              myAccepted.push(books[i]);
+            } else {
+              myRequests.push(books[i]);
+            }
+          }    
+        }
+      }
+      res.render('allbooks', {front:false,user:req.user,books:books,myrequests:myRequests,yourrequests:yourRequests,myaccepted:myAccepted,youraccepted:yourAccepted});
+    });
+  }else {
+    res.redirect('/');
+  }
+});
+app.post('/allbooks/request', function(req,res) {
+  Book.findOne({_id:req.body.bookid}, function(err, book) {
+    if(err) {
+      console.log("Error looking up Book: " + err);
+      res.redirect("/");
+    }
+    book.requesterid = req.user._id;
+    book.tradeapproved = false;
+    book.save( function(err) {
+      if(err) {
+        console.log("Error saving book request: " + err);
+        res.redirect("/");
+      }
+      res.redirect('/allbooks');
+    });
+  });
+})
+app.post("/trade/remove", function (req,res) {
+  Book.findOne({_id:req.body.bookid}, function(err, book) {
+    if(err) {
+      console.log("Error looking up Book: " + err);
+      res.redirect('/');
+    }
+    book.requesterid = null;
+    book.tradeapproved = false;
+
+    book.save( function(err){
+      if(err) {
+        console.log("Error saving Book: " + err);
+        res.redirect('/');
+      }
+      res.redirect('/allbooks');
+    });
+  }); 
+});
+app.post('/trade/approve', function(req,res) {
+  Book.findOne({_id:req.body.bookid},function(err,book) {
+    if(err) {
+      console.log("Error looking up Book: " + err);
+      res.redirect("/");
+    }
+    book.tradeapproved = true;
+    book.save(function(err){
+      if(err) { 
+        console.log("Error saving Book: " + err);
+        res.redirect('/');
+      }
+      res.redirect('/allbooks');
+    });
+  });
 });
 //PORT========================================================================
 var listener = app.listen(8080,function() {
