@@ -54,3 +54,21 @@ body {
 .yourTrade {
   font-size : 14px;
 }
+#signature {
+	color: black;
+	font-size: 12px;
+	margin-top: 50px;
+}
+#signature a:link {
+	color: #428bca;
+}
+#signature a:visited {
+	color: rgb(109, 109, 112);
+}
+#signature a:hover {
+	color: #5cb85c;
+	text-decoration:none;
+}
+#signature p {
+    line-height : 5px;
+}
