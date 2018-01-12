@@ -390,6 +390,6 @@ app.post('/trade/approve', function(req,res) {
   });
 });
 //PORT========================================================================
-var listener = app.listen(8080,function() {
+var listener = app.listen(process.env.PORT,function() {
     console.log("Your app is listening on port " + listener.address().port);
 });
